@@ -1,7 +1,7 @@
 #!/bin/sh
 
 DEFCONFIG="vendor/rvkernel-mi8937_defconfig"
-CLANGDIR="/home/rve/RvClang"
+CLANGDIR="clang"
 
 rm -rf out/compile.log
 
