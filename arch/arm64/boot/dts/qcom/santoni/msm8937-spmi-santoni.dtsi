@@ -1,0 +1,68 @@
+
+&spmi_bus {
+	qcom,pm8937@0 {
+		qcom,power-on@800 {
+			qcom,store-hard-reset-reason;
+			qcom,pon_1 {
+				qcom,support-reset = <1>;
+                                qcom,s1-timer = <4480>;
+				qcom,s2-timer = <2000>;
+				qcom,s2-type = <7>;
+			};
+		};
+	};
+
+	qcom,pm8937@1 {
+		pm8937_s5: spm-regulator@2000 {
+			qcom,mode = "pwm";
+		};
+	};
+
+	qcom,pmi8950@3 {
+		labibb: qpnp-labibb-regulator {
+			ibb_regulator: qcom,ibb@dc00 {
+				/delete-property/
+					qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-lcd-voltage = <5500000>;
+			};
+
+			lab_regulator: qcom,lab@de00 {
+				/delete-property/
+					qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-lcd-voltage = <5500000>;
+			};
+		};
+	};
+};
+
+&sdc2_cmd_on {
+	config {
+		drive-strength = <12>;
+	};
+};
+
+&sdc2_data_on {
+	config {
+		drive-strength = <12>;
+	};
+};
+
+&pmi_haptic {
+        qcom,vmax-mv = <2700>;
+        qcom,actuator-type = <1>;
+	/delete-property/ qcom,en-brake;
+};
+
+&usb_otg {
+	qcom,usbin-vadc = <&pmi8950_vadc>;
+};
+
+&apc_vreg_corner {
+	qcom,cpr-voltage-floor = <1150000 1150000 1250000>;
+	/delete-property/ qcom.cpr-enable;
+};
+
+&pm8937_l6 {
+	regulator-always-on;
+};
+

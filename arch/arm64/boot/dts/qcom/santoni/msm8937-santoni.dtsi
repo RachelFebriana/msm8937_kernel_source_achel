@@ -1,0 +1,22 @@
+/*
+ * Copyright (c) 2017, The Linux Foundation. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+#include "msm8937-audio-santoni.dtsi"
+#include "msm8937-camera-qrd-santoni.dtsi"
+#include "msm8937-camera-sensor-qrd-santoni.dtsi"
+#include "msm8937-display-santoni.dtsi"
+#include "msm8937-general-santoni.dtsi"
+#include "msm8937-memory-santoni.dtsi"
+#include "msm8937-pinctrl-santoni.dtsi"
+#include "msm8937-spmi-santoni.dtsi"
+#include "msm8937-energy-model.dtsi"

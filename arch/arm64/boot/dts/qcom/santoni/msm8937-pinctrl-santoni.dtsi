@@ -1,0 +1,326 @@
+&i2c_2  {
+	aw2013@45 {
+		compatible = "awinic,aw2013";
+		reg = <0x45>;
+		rgb_led-supply = <&pm8937_l10>;
+
+		red {
+			label = "red";
+			linux,default-trigger = "battery-red";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		green {
+			label = "green";
+			linux,default-trigger = "battery-green";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		blue {
+			label = "blue";
+			linux,default-trigger = "battery-blue";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		white {
+			label = "white";
+			linux,default-trigger = "none";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		yellow {
+			label = "yellow";
+			linux,default-trigger = "none";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		cyan {
+			label = "cyan";
+			linux,default-trigger = "none";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+		purple {
+			label = "purple";
+			linux,default-trigger = "none";
+			default-state = "off";
+			retain-state-suspended;
+		};
+	};
+
+	aw87319@58{ /*AW87319 PA*/
+		compatible = "awinic,aw87319_pa";
+		reg = <0x58>;
+		qcom,ext_pa_spk_aw87319_rst = <&tlmm 124 0>;
+	};
+
+        pericom-type-c@1d {
+                status="disabled";
+        };
+};
+
+&i2c_3 {
+	ftech@38 {
+		compatible = "focaltech,5336";
+		reg = <0x38>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <65 0x2008>;
+		vdd-supply = <&pm8937_l10>;
+		vcc_i2c-supply = <&pm8937_l5>;
+
+		pinctrl-names = "pmx_ts_active","pmx_ts_suspend",
+				"pmx_ts_release";
+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
+		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
+		pinctrl-2 = <&ts_release>;
+		ftech,name = "ft5336";
+		ftech,family-id = <0x36>;
+		ftech,reset-gpio = <&tlmm 64 0x00>;
+		ftech,irq-gpio = <&tlmm 65 0x2008>;
+		ftech,display-coords = <0 0 720 1280>;
+		ftech,panel-coords = <0 0 720 1280>;
+		ftech,button-map= <139 172 158>; /* APP_SWITCH HOME BACK just like stock rom */
+		ftech,button-y-coord = <2040>;
+		ftech,button-x-coords = <120 500 900>;
+		ftech,no-force-update;
+		ftech,i2c-pull-up;
+		ftech,group-id = <1>;
+		ftech,hard-reset-delay-ms = <20>;
+		ftech,soft-reset-delay-ms = <200>;
+		ftech,num-max-touches = <10>;
+		ftech,fw-delay-aa-ms = <30>;
+		ftech,fw-delay-55-ms = <30>;
+		ftech,fw-upgrade-id1 = <0x79>;
+		ftech,fw-upgrade-id2 = <0x18>;
+		ftech,fw-delay-readid-ms = <10>;
+		ftech,fw-delay-era-flsh-ms = <2000>;
+		ftech,fw-auto-cal;
+		ftech,ignore-id-check;
+	};
+};
+
+&soc {
+	gen-vkey1 {
+		compatible = "qcom,gen-vkeys";
+		label = "ft5x06_720p";
+		qcom,disp-maxx = <720>;
+		qcom,disp-maxy = <1280>;
+		qcom,panel-maxx = <720>;
+		qcom,panel-maxy = <1458>;
+		qcom,key-codes = <139 172 158>;
+		qcom,y-offset = <0>;
+	};
+
+	gpio-leds {
+		compatible = "gpio-leds";
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpio_led_off>;
+
+		infred {
+			gpios = <&tlmm 45 0>;
+			label = "infrared";
+			linux,default-trigger = "infra-red";
+			default-state = "off";
+			retain-state-suspended;
+		};
+
+	};
+
+	fpc1020 {
+		compatible = "soc:fpc1020";
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <9 0x0>;
+
+		fpc,gpio_rst    = <&tlmm 8 0>;
+		fpc,gpio_irq    = <&tlmm 9 0>;
+
+		vcc_spi-supply  = <&pm8937_l5>;
+		vdd_ana-supply  = <&pm8937_l5>;
+		vdd_io-supply   = <&pm8937_l5>;
+
+		fpc,enable-on-boot;
+		/delete-property/ fpc,enable-wakeup;
+
+		fpc,spi-max-frequency = <4800000>;
+
+		clock-names = "iface_clk", "core_clk";
+		clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
+				<&clock_gcc clk_gcc_blsp1_qup1_spi_apps_clk>;
+
+		pinctrl-names = "fpc1020_spi_active",
+				"fpc1020_reset_reset",
+				"fpc1020_reset_active",
+				"fpc1020_irq_active";
+
+		pinctrl-0 = <&fpc_spi_active>;
+		pinctrl-1 = <&fpc_reset_reset>;
+		pinctrl-2 = <&fpc_reset_active>;
+		pinctrl-3 = <&fpc_irq_active>;
+	};
+
+	goodix_fp {
+		compatible = "goodix,fingerprint";
+		spi-max-frequency = <1000000>;
+		input-device-name = "gf3208";
+		interrupt-parent = <&tlmm>;
+		interrupts = <9 0x0>;
+
+		goodix,gpio_reset    = <&tlmm 8 0>;
+		goodix,gpio_irq      = <&tlmm 9 0>;
+
+		clock-names = "iface_clk", "core_clk";
+		clocks = <&clock_gcc clk_gcc_blsp1_ahb_clk>,
+				<&clock_gcc clk_gcc_blsp1_qup1_spi_apps_clk>;
+
+		pinctrl-names = "goodixfp_spi_active",
+				"goodixfp_reset_reset",
+				"goodixfp_reset_active",
+				"goodixfp_irq_active";
+
+		pinctrl-0 = <&goodix_spi_active>;
+		pinctrl-1 = <&goodix_reset_reset>;
+		pinctrl-2 = <&goodix_reset_active>;
+		pinctrl-3 = <&goodix_irq_active>;
+	};
+
+	i2c@78b7000 {
+		qcom,clk-freq-out = <100000>;
+		status = "okay";
+	};
+};
+
+&tlmm {
+	gpio_led_pins {
+		gpio_led_off: gpio_led_off {
+			mux {
+				pins = "gpio45";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio45";
+				drive-strength = <6>;
+				bias-disable;
+				output-high;
+			};
+		};
+	};
+
+	fpc_spi_active: fpc_spi_active {
+		mux {
+			pins = "gpio20", "gpio21", "gpio22", "gpio23";
+			function = "blsp_spi6";
+		};
+
+		config {
+			pins = "gpio20", "gpio21", "gpio22", "gpio23";
+			drive-strength = <2>;
+			bias-disable = <0>;
+		};
+	};
+
+	fpc_reset_reset: fpc_reset_reset {
+		mux {
+			pins = "gpio8";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio8";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			output-low;
+		};
+	};
+
+	fpc_reset_active: fpc_reset_active {
+		mux {
+			pins = "gpio8";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio8";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			output-high;
+		};
+	};
+
+	fpc_irq_active: fpc_irq_active {
+		mux {
+			pins = "gpio9";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio9";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			input-enable;
+		};
+	};
+
+	goodix_spi_active: goodix_spi_active {
+		mux {
+			pins = "gpio20", "gpio21", "gpio22", "gpio23";
+			function = "blsp_spi6";
+		};
+
+		config {
+			pins = "gpio20", "gpio21", "gpio22", "gpio23";
+			drive-strength = <2>;
+			bias-disable = <0>;
+		};
+	};
+
+	goodix_reset_reset: goodix_reset_reset {
+		mux {
+			pins = "gpio8";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio8";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			output-low;
+		};
+	};
+
+	goodix_reset_active: goodix_reset_active {
+		mux {
+			pins = "gpio8";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio8";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			output-high;
+		};
+	};
+
+	goodix_irq_active: goodix_irq_active {
+		mux {
+			pins = "gpio9";
+			function = "gpio";
+		};
+
+		config {
+			pins = "gpio9";
+			drive-strength = <2>;
+			bias-disable = <0>;
+			input-enable;
+		};
+	};
+};

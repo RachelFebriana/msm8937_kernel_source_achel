@@ -1,0 +1,94 @@
+/*
+ * Copyright (c) 2016, The Linux Foundation. All rights reserved.
+ * Copyright (C) 2018 XiaoMi, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+/ {
+	qrd_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+		#include "batterydata-qrd-Desay-4v4-4100mah.dtsi"
+		#include "batterydata-qrd-Atl-4v4-4100mah.dtsi"
+		#include "batterydata-qrd-Coslight-4v4-4100mah.dtsi"
+		#include "batterydata-qrd-Default-4v4-4100mah.dtsi"
+	};
+};
+
+&qpnp_smbcharger {
+	qcom,battery-data = <&qrd_batterydata>;
+	qcom,float-voltage-mv = <4400>;
+	qcom,chg-inhibit-fg;
+	qcom,thermal-mitigation = <2000 1500 1200 700 0>;
+	status = "okay";
+	qcom,vchg_sns-vadc = <&pmi8950_vadc>;
+	qcom,vchg-adc-channel-id = <3>;
+	qcom,chg-led-sw-controls;
+	qcom,chg-led-support;
+	dpdm-supply = <&usb_otg>;
+};
+
+&usb_otg {
+	extcon = <&qpnp_smbcharger>;
+};
+
+&pm8937_vadc {
+	/delete-node/ chan@11;
+};
+
+&thermal_zones {
+	/delete-node/ pa-therm1-adc;
+};
+
+&qpnp_fg {
+	qcom,battery-data = <&qrd_batterydata>;
+	qcom,cold-bat-decidegc = <(0)>;
+	qcom,cool-bat-decidegc = <(150)>;
+	qcom,hot-bat-decidegc = <550>;
+	qcom,warm-bat-decidegc = <450>;
+	qcom,warm-bat-india-decidegc = <500>;
+	qcom,fg-iterm-ma = <180>;
+	qcom,fg-chg-iterm-ma = <130>;
+	qcom,resume-soc = <99>;
+	qcom,resume-soc-raw = <253>;
+	qcom,vbat-estimate-diff-mv = <100>;
+	qcom,fg-cutoff-voltage-mv = <3400>;
+	qcom,fg-cc-cv-threshold-mv = <4390>;
+	qcom,cl-max-increment-deciperc = <1>;
+	qcom,cl-max-decrement-deciperc = <1>;
+	qcom,fg-delta-soc = <1>;
+	qcom,bad-battery-detection-enable;
+	qcom,hold-soc-while-full;
+	qcom,thermal-coefficients = [B7 85 B2 49 71 35];
+};
+
+&firmware {
+	android {
+		/delete-node/ vbmeta;
+		fstab {
+			vendor {
+				dev = "/dev/block/platform/soc/7824900.sdhci/by-name/cust";
+				fsmgr_flags = "wait";
+			};
+			system {
+				compatible = "android,system";
+				dev = "/dev/block/platform/soc/7824900.sdhci/by-name/system";
+				type = "ext4";
+				mnt_flags = "ro,barrier=1,discard";
+				fsmgr_flags = "wait";
+				status = "ok";
+			};
+		};
+	};
+};
+
+&apps_iommu {
+	qcom,no-aarch64;
+};
